@@ -69,13 +69,13 @@ export const useStore = create((set) => ({
         }
       }
 
-      return {
-        cart: state.cart.map((item) =>
-          normalizeId(item.id) === normalizeId(id)
-            ? { ...item, qty: nextQty }
-            : item
-        ),
-      }
+      const newCart = state.cart.map((item) =>
+        normalizeId(item.id) === normalizeId(id)
+          ? { ...item, qty: nextQty }
+          : item
+      )
+
+      return { cart: [...newCart] }  // ← spread extra para garantir nova referência
     }),
 
   clearCart: () => set({ cart: [] }),

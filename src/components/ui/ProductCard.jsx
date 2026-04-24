@@ -1,11 +1,20 @@
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../store/useStore'
+import { useEffect, useState } from 'react'
 import styles from './ProductCard.module.css'
 
 export default function ProductCard({ product }) {
-  const { addToCart, cart, user } = useStore()
+  const addToCart = useStore((state) => state.addToCart)
+  const cart = useStore((state) => state.cart)
+  const user = useStore((state) => state.user)
   const navigate = useNavigate()
-  const inCart = cart.find(i => i.id === product.id)
+
+  const [isAdded, setIsAdded] = useState(false)
+
+  useEffect(() => {
+    const found = cart.find(item => String(item.id) === String(product.id))
+    setIsAdded(found !== undefined)
+  }, [cart, product.id])
 
   const handleAdd = () => {
     if (!user) { navigate('/login'); return }
@@ -24,10 +33,10 @@ export default function ProductCard({ product }) {
         <p className={styles.name}>{product.name}</p>
         <p className={styles.price}>R$ {product.price.toFixed(2)}</p>
         <button
-          className={`${styles.btn} ${inCart ? styles.added : ''}`}
+          className={`${styles.btn} ${isAdded ? styles.added : ''}`}
           onClick={handleAdd}
         >
-          {inCart ? `✓ No carrinho (${inCart.qty})` : '+ Adicionar'}
+          {isAdded ? `✓ No carrinho (${cart.find(item => String(item.id) === String(product.id))?.qty ?? 1})` : '+ Adicionar'}
         </button>
       </div>
     </div>

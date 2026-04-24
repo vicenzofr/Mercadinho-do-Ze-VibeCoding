@@ -1,7 +1,8 @@
+import { useMemo } from 'react'  // ← adiciona isso
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../store/useStore'
 import styles from './CartPage.module.css'
-import { cartTotal, getItemQty, getItemPrice } from '../../store/cartUtils'
+import { cartTotal, getItemQty, getItemPrice } from '../../store/cartUtils'  // ← usa as do cartUtils
 
 export default function CartPage() {
   const cart = useStore((state) => state.cart)
@@ -12,12 +13,9 @@ export default function CartPage() {
 
   const navigate = useNavigate()
 
-  const getItemPrice = (item) => Number(item.price ?? 0)
-  const getItemQty = (item) => Number(item.qty ?? 1)
 
-  const total = cart.reduce((sum, item) => {
-    return sum + getItemPrice(item) * getItemQty(item)
-  }, 0)
+  // ← usa useMemo para recalcular sempre que cart mudar
+  const total = useMemo(() => cartTotal(cart), [cart])
 
   if (cart.length === 0) {
     return (
@@ -52,8 +50,8 @@ export default function CartPage() {
       <div className={styles.layout}>
         <div className={styles.items}>
           {cart.map((item, index) => {
-            const itemPrice = getItemPrice(item)
-            const itemQty = getItemQty(item)
+            const itemPrice = getItemPrice(item)  // ← agora usa a do cartUtils
+            const itemQty = getItemQty(item)      // ← agora usa a do cartUtils
             const itemTotal = itemPrice * itemQty
 
             return (
@@ -80,7 +78,8 @@ export default function CartPage() {
                 </button>
               </div>
             )
-          })}
+          })
+          }
         </div>
 
         <div className={styles.summary}>
