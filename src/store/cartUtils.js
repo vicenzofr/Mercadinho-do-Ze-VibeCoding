@@ -1,25 +1,11 @@
-const getValidNumber = (value) => {
-    const n = Number(value)
-    return Number.isFinite(n) ? n : null
-}
-
 export const getItemQty = (item) => {
-    const candidates = [
-        getValidNumber(item.qty),
-        getValidNumber(item.qtd),
-        getValidNumber(item.quantity),
-    ].filter((n) => n !== null && n > 0)
-
-    return candidates.length > 0 ? Math.max(...candidates) : 1
+    const qty = Number(item.qty)
+    return Number.isFinite(qty) && qty > 0 ? qty : 1
 }
 
 export const getItemPrice = (item) => {
-    const candidates = [
-        getValidNumber(item.price),
-        getValidNumber(item.preco),
-    ].filter((n) => n !== null)
-
-    return candidates.length > 0 ? candidates[0] : 0
+    const price = Number(item.price ?? item.preco ?? 0)
+    return Number.isFinite(price) ? price : 0
 }
 
 export const cartTotal = (cart) =>

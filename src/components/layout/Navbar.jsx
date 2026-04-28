@@ -2,11 +2,12 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useStore } from '../../store/useStore'
 import { cartCount } from '../../store/cartUtils'
 import styles from './Navbar.module.css'
+import { useCart } from '../../store/CartContext'
 
 export default function Navbar() {
   const user = useStore((state) => state.user)
   const logout = useStore((state) => state.logout)
-  const cart = useStore((state) => state.cart)
+  const { cart } = useCart()
 
   const navigate = useNavigate()
   const count = cartCount(cart)

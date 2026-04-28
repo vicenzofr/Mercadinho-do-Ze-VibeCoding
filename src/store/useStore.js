@@ -1,17 +1,16 @@
 import { create } from 'zustand'
+// import { subscribeWithSelector } from 'zustand/middleware'
 
 const normalizeId = (id) => String(id)
-
 const normalizePrice = (price) => Number(price ?? 0)
 
 const normalizeProduct = (product) => ({
   ...product,
   id: normalizeId(product.id),
   price: normalizePrice(product.price ?? product.preco),
-  qty: Number(product.qty ?? product.qtd ?? product.quantity ?? 1),
 })
 
-export const useStore = create((set) => ({
+export const useStore = create(((set) => ({
   user: null,
   cart: [],
 
@@ -21,7 +20,6 @@ export const useStore = create((set) => ({
   addToCart: (product) =>
     set((state) => {
       const normalized = normalizeProduct(product)
-
       const existing = state.cart.find(
         (item) => normalizeId(item.id) === normalizeId(normalized.id)
       )
@@ -30,23 +28,14 @@ export const useStore = create((set) => ({
         return {
           cart: state.cart.map((item) =>
             normalizeId(item.id) === normalizeId(normalized.id)
-              ? {
-                ...item,
-                qty: Number(item.qty ?? 1) + 1,
-              }
+              ? { ...item, qty: item.qty + 1 }
               : item
           ),
         }
       }
 
       return {
-        cart: [
-          ...state.cart,
-          {
-            ...normalized,
-            qty: 1,
-          },
-        ],
+        cart: [...state.cart, { ...normalized, qty: 1 }],
       }
     }),
 
@@ -59,24 +48,23 @@ export const useStore = create((set) => ({
 
   updateQty: (id, qty) =>
     set((state) => {
-      const nextQty = Number(qty)
+      const newQty = Number(qty)
 
-      if (nextQty <= 0) {
+      if (newQty <= 0) {
         return {
-          cart: state.cart.filter(
-            (item) => normalizeId(item.id) !== normalizeId(id)
-          ),
+          cart: state.cart.filter((item) => normalizeId(item.id) !== normalizeId(id))
         }
       }
 
-      const newCart = state.cart.map((item) =>
-        normalizeId(item.id) === normalizeId(id)
-          ? { ...item, qty: nextQty }
-          : item
-      )
-
-      return { cart: [...newCart] }  // ← spread extra para garantir nova referência
+      return {
+        cart: state.cart.map((item) =>
+          normalizeId(item.id) === normalizeId(id)
+            ? { ...item, qty: newQty }
+            : item
+        )
+      }
     }),
 
   clearCart: () => set({ cart: [] }),
 }))
+)

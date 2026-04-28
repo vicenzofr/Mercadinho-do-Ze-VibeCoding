@@ -1,14 +1,13 @@
 import { useNavigate } from 'react-router-dom'
+import { useCart } from '../../store/CartContext'
 import { useStore } from '../../store/useStore'
 import { useEffect, useState } from 'react'
 import styles from './ProductCard.module.css'
 
 export default function ProductCard({ product }) {
-  const addToCart = useStore((state) => state.addToCart)
-  const cart = useStore((state) => state.cart)
+  const { addToCart, cart } = useCart()
   const user = useStore((state) => state.user)
   const navigate = useNavigate()
-
   const [isAdded, setIsAdded] = useState(false)
 
   useEffect(() => {
